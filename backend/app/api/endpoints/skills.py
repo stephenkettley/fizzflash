@@ -1,9 +1,12 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.db.deps import get_db
 from app.services.skill_service import SkillService
+from pydantic import BaseModel
+
 
 router = APIRouter()
-service = SkillService()
 
 
 class SkillCreate(BaseModel):
@@ -11,15 +14,16 @@ class SkillCreate(BaseModel):
 
 
 @router.post("/skills")
-def create_skill(payload: SkillCreate):
+def create_skill(payload: SkillCreate, db: Session = Depends(get_db)):
+
+    service = SkillService(db)
+
     return service.create_skill(payload.name)
 
 
 @router.get("/skills")
-def list_skills():
+def get_skills(db: Session = Depends(get_db)):
+
+    service = SkillService(db)
+
     return service.list_skills()
-
-
-@router.delete("/skills/{skill_id}")
-def delete_skill(skill_id: int):
-    return service.delete_skill(skill_id)

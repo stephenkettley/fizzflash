@@ -1,30 +1,41 @@
-from typing import Dict, List
+from sqlalchemy.orm import Session
+from app.db.models import Skill
 
 
 class SkillRepository:
-    def __init__(self):
-        self._skills: Dict[int, dict] = {}
-        self._id_counter = 1
 
-    def create(self, name: str) -> dict:
-        skill = {
-            "id": self._id_counter,
-            "name": name,
-            "seen": 0,
-            "correct": 0,
-            "incorrect": 0,
-            "accuracy": 0.0,
-            "mastery": 0.0,
-        }
-        self._skills[self._id_counter] = skill
-        self._id_counter += 1
+    def __init__(self, db: Session):
+        self.db = db
+
+    def create(self, name: str):
+        skill = Skill(name=name)
+
+        self.db.add(skill)
+        self.db.commit()
+        self.db.refresh(skill)
+
         return skill
 
-    def list(self) -> List[dict]:
-        return list(self._skills.values())
-
     def get(self, skill_id: int):
-        return self._skills.get(skill_id)
+        return self.db.query(Skill).filter(Skill.id == skill_id).first()
 
-    def delete(self, skill_id: int):
-        return self._skills.pop(skill_id, None)
+    def get_all(self):
+        return self.db.query(Skill).all()
+
+    def update_stats(self, skill_id: int, is_correct: bool):
+        skill = self.get(skill_id)
+
+        if not skill:
+            return None
+
+        skill.seen += 1
+
+        if is_correct:
+            skill.correct += 1
+        else:
+            skill.incorrect += 1
+
+        self.db.commit()
+        self.db.refresh(skill)
+
+        return skill

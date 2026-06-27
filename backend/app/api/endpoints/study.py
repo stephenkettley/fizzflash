@@ -1,21 +1,18 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.db.deps import get_db
 from app.services.study_service import StudyService
 
 router = APIRouter()
 
-service = StudyService()
 
+# -------------------------
+# START STUDY SESSION
+# -------------------------
+@router.post("/study/{subdomain_id}/start")
+def start_session(subdomain_id: int, db: Session = Depends(get_db)):
 
-@router.post("/study/subdomain/{subdomain_id}")
-def start_subdomain(subdomain_id: int):
+    service = StudyService(db)
+
     return service.start_subdomain_session(subdomain_id)
-
-
-@router.post("/study/skill/{skill_id}")
-def start_skill(skill_id: int):
-    return service.start_skill_session(skill_id)
-
-
-@router.get("/study/{session_id}/next")
-def next_card(session_id: int):
-    return service.get_next_card(session_id)

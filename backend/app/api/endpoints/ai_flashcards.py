@@ -1,20 +1,33 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.db.deps import get_db
 from app.services.flashcard_service import FlashcardService
-from app.services.subdomain_service import SubdomainService
-from app.services.skill_service import SkillService
+from pydantic import BaseModel
+
 
 router = APIRouter()
 
-flashcard_service = FlashcardService()
-subdomain_service = SubdomainService()
-skill_service = SkillService()
+
+# -------------------------
+# SCHEMA
+# -------------------------
+class AIFlashcardRequest(BaseModel):
+    subdomain_id: int
+    topic: str
 
 
-@router.post("/flashcards/ai")
-def generate_ai_flashcards(subdomain_id: int, count: int = 5):
-    subdomain = subdomain_service.get_subdomain(subdomain_id)
-    skill = skill_service.repo.get(subdomain["skill_id"])
+# -------------------------
+# GENERATE AI FLASHCARDS
+# -------------------------
+@router.post("/ai/flashcards")
+def generate_ai_flashcards(payload: AIFlashcardRequest, db: Session = Depends(get_db)):
 
-    return flashcard_service.generate_ai_flashcards(
-        subdomain=subdomain, skill=skill, count=count
+    flashcard_service = FlashcardService(db)
+
+    # placeholder logic (you may already have AI logic here)
+    return flashcard_service.repo.create(
+        subdomain_id=payload.subdomain_id,
+        front=f"AI: {payload.topic}",
+        back="Generated answer",
     )

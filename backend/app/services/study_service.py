@@ -1,56 +1,44 @@
-import random
 from app.services.flashcard_service import FlashcardService
-from app.services.subdomain_service import SubdomainService
 
 
 class StudyService:
-    def __init__(self):
-        self.flashcard_service = FlashcardService()
-        self.subdomain_service = SubdomainService()
 
+    def __init__(self, db):
+        self.db = db
+        self.flashcard_service = FlashcardService(db)
         self.sessions = {}
         self.session_counter = 1
 
+    # -------------------------
+    # START STUDY SESSION
+    # -------------------------
     def start_subdomain_session(self, subdomain_id: int):
 
-        cards = self.flashcard_service.repo.get_due_cards(subdomain_id)
+        cards = self.flashcard_service.get_subdomain_cards(subdomain_id)
 
         session = {
             "id": self.session_counter,
+            "subdomain_id": subdomain_id,
             "cards": cards,
             "index": 0,
             "results": [],
         }
 
         self.sessions[self.session_counter] = session
-
         self.session_counter += 1
 
         return session
 
-    def start_skill_session(self, skill_id: int):
-        subdomains = self.subdomain_service.list_subdomains(skill_id)
+    # -------------------------
+    # MARK ANSWER IN SESSION
+    # -------------------------
+    def mark_answer(self, session_id: int, card_id: int, is_correct: bool):
 
-        cards = self.flashcard_service.get_skill_cards(skill_id, self.subdomain_service)
-        random.shuffle(cards)
+        card = self.flashcard_service.mark_answer(card_id, is_correct)
 
-        session = {"id": self.session_counter, "cards": cards, "index": 0}
-
-        self.sessions[self.session_counter] = session
-        self.session_counter += 1
-
-        return session
-
-    def get_next_card(self, session_id: int):
         session = self.sessions.get(session_id)
 
-        if not session:
-            return None
+        if session:
+            session["results"].append({"card_id": card_id, "is_correct": is_correct})
 
-        if session["index"] >= len(session["cards"]):
-            return {"done": True}
-
-        card = session["cards"][session["index"]]
-        session["index"] += 1
-
-        return {"done": False, "card": card}
+        return card

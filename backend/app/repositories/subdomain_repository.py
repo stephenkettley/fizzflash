@@ -1,33 +1,41 @@
-from typing import Dict, List, Optional
+from sqlalchemy.orm import Session
+from app.db.models import Subdomain
 
 
 class SubdomainRepository:
-    def __init__(self):
-        self._subdomains: Dict[int, dict] = {}
-        self._id_counter = 1
 
-    def create(self, skill_id: int, name: str) -> dict:
-        subdomain = {
-            "id": self._id_counter,
-            "skill_id": skill_id,
-            "name": name,
-            "seen": 0,
-            "correct": 0,
-            "incorrect": 0,
-            "accuracy": 0.0,
-            "mastery": 0.0,
-        }
+    def __init__(self, db: Session):
+        self.db = db
 
-        self._subdomains[self._id_counter] = subdomain
-        self._id_counter += 1
+    def create(self, skill_id: int, name: str):
+        subdomain = Subdomain(skill_id=skill_id, name=name)
+
+        self.db.add(subdomain)
+        self.db.commit()
+        self.db.refresh(subdomain)
 
         return subdomain
 
-    def list_by_skill(self, skill_id: int) -> List[dict]:
-        return [s for s in self._subdomains.values() if s["skill_id"] == skill_id]
+    def get(self, subdomain_id: int):
+        return self.db.query(Subdomain).filter(Subdomain.id == subdomain_id).first()
 
-    def get(self, subdomain_id: int) -> Optional[dict]:
-        return self._subdomains.get(subdomain_id)
+    def get_by_skill(self, skill_id: int):
+        return self.db.query(Subdomain).filter(Subdomain.skill_id == skill_id).all()
 
-    def delete(self, subdomain_id: int) -> Optional[dict]:
-        return self._subdomains.pop(subdomain_id, None)
+    def update_stats(self, subdomain_id: int, is_correct: bool):
+        subdomain = self.get(subdomain_id)
+
+        if not subdomain:
+            return None
+
+        subdomain.seen += 1
+
+        if is_correct:
+            subdomain.correct += 1
+        else:
+            subdomain.incorrect += 1
+
+        self.db.commit()
+        self.db.refresh(subdomain)
+
+        return subdomain
