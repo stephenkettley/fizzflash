@@ -23,10 +23,11 @@ class FlashcardRepository:
         return card
 
     def list_by_subdomain(self, subdomain_id: int) -> List[dict]:
-        return [c for c in self._cards.values() if c["subdomain_id"] == subdomain_id]
-
-    def list_by_skill(self, skill_id: int) -> List[dict]:
-        return list(self._cards.values())
+        return [
+            card
+            for card in self._cards.values()
+            if card["subdomain_id"] == subdomain_id
+        ]
 
     def get(self, card_id: int) -> Optional[dict]:
         return self._cards.get(card_id)
