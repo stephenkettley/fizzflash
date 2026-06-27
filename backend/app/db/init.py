@@ -1,5 +1,5 @@
 from app.db.session import Base, engine
-from app.db import models
+from app.db import modelscool
 
 
 def init_db():

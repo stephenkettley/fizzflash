@@ -25,7 +25,6 @@ class StudyService:
         return session
 
     def mark_answer(self, session_id: int, card_id: int, is_correct: bool):
-
         card = self.flashcard_service.mark_answer(card_id, is_correct)
 
         session = self.sessions.get(session_id)
