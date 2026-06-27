@@ -7,9 +7,6 @@ from app.services.study_service import StudyService
 router = APIRouter()
 
 
-# -------------------------
-# START STUDY SESSION
-# -------------------------
 @router.post("/study/{subdomain_id}/start")
 def start_session(subdomain_id: int, db: Session = Depends(get_db)):
 

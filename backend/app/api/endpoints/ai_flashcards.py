@@ -9,17 +9,11 @@ from pydantic import BaseModel
 router = APIRouter()
 
 
-# -------------------------
-# SCHEMA
-# -------------------------
 class AIFlashcardRequest(BaseModel):
     subdomain_id: int
     topic: str
 
 
-# -------------------------
-# GENERATE AI FLASHCARDS
-# -------------------------
 @router.post("/ai/flashcards")
 def generate_ai_flashcards(payload: AIFlashcardRequest, db: Session = Depends(get_db)):
 

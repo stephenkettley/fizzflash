@@ -26,7 +26,6 @@ Return ONLY valid JSON in this format:
 
 No explanation. No markdown. Only JSON.
 """
-
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
