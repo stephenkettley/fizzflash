@@ -1,4 +1,4 @@
-(Will be updated at the end of the project properly).
+(Will be updated at the end of the project properly). Once built the whole spec will be added.
 
 Full flashcard based learning application. I am building the frontend, backend and handling all DevOps related processes, end to end. This is a fullstack (with DevOps) project. 
 
