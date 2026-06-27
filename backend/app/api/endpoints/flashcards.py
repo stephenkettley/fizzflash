@@ -15,6 +15,10 @@ class FlashcardCreate(BaseModel):
     back: str
 
 
+class FlashcardAnswer(BaseModel):
+    is_correct: bool
+
+
 @router.post("/flashcards")
 def create_flashcard(payload: FlashcardCreate):
     return service.create_manual_card(
@@ -40,3 +44,8 @@ def delete_flashcard(card_id: int):
 @router.get("/skills/{skill_id}/flashcards")
 def get_flashcards_by_skill(skill_id: int):
     return service.get_skill_cards(skill_id, subdomain_service)
+
+
+@router.post("/flashcards/{card_id}/answer")
+def answer_flashcard(card_id: int, payload: FlashcardAnswer):
+    return service.mark_answer(card_id=card_id, is_correct=payload.is_correct)

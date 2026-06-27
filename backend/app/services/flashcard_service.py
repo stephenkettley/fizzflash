@@ -24,6 +24,9 @@ class FlashcardService:
     def delete_card(self, card_id: int):
         return self.repo.delete(card_id)
 
+    def mark_answer(self, card_id: int, is_correct: bool):
+        return self.repo.update_stats(card_id, is_correct)
+
     def get_skill_cards(self, skill_id: int, subdomain_service):
         subdomains = subdomain_service.list_subdomains(skill_id)
 
