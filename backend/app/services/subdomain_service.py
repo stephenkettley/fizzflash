@@ -1,4 +1,5 @@
 from app.repositories.subdomain_repository import SubdomainRepository
+from app.utils.stats import compute_accuracy
 
 
 class SubdomainService:
@@ -17,3 +18,28 @@ class SubdomainService:
 
     def delete_subdomain(self, subdomain_id: int):
         return self.repo.delete(subdomain_id)
+
+    def update_stats(self, subdomain_id: int, is_correct: bool):
+        subdomain = self.repo.get(subdomain_id)
+
+        if not subdomain:
+            return None
+
+        subdomain["seen"] += 1
+        if is_correct:
+            subdomain["correct"] += 1
+
+        else:
+            subdomain["incorrect"] += 1
+
+        # 📊 accuracy
+        subdomain["accuracy"] = compute_accuracy(
+            subdomain["correct"], subdomain["seen"]
+        )
+
+        # 🧠 mastery (slightly more sensitive than skill)
+        subdomain["mastery"] = (
+            subdomain["accuracy"] * 0.8 + min(subdomain["correct"] / 20, 1.0) * 0.2
+        )
+
+        return subdomain

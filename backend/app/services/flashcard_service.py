@@ -37,3 +37,16 @@ class FlashcardService:
             all_cards.extend(cards)
 
         return all_cards
+
+    def mark_answer(self, card_id, is_correct, subdomain_service, skill_service):
+        card = self.repo.update_stats(card_id, is_correct)
+
+        subdomain = subdomain_service.get_subdomain(card["subdomain_id"])
+
+        skill_id = subdomain["skill_id"]
+
+        subdomain_service.update_stats(card["subdomain_id"], is_correct)
+
+        skill_service.update_stats(skill_id, is_correct)
+
+        return card

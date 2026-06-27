@@ -7,7 +7,15 @@ class SkillRepository:
         self._id_counter = 1
 
     def create(self, name: str) -> dict:
-        skill = {"id": self._id_counter, "name": name}
+        skill = {
+            "id": self._id_counter,
+            "name": name,
+            "seen": 0,
+            "correct": 0,
+            "incorrect": 0,
+            "accuracy": 0.0,
+            "mastery": 0.0,
+        }
         self._skills[self._id_counter] = skill
         self._id_counter += 1
         return skill

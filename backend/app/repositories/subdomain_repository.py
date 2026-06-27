@@ -7,7 +7,16 @@ class SubdomainRepository:
         self._id_counter = 1
 
     def create(self, skill_id: int, name: str) -> dict:
-        subdomain = {"id": self._id_counter, "skill_id": skill_id, "name": name}
+        subdomain = {
+            "id": self._id_counter,
+            "skill_id": skill_id,
+            "name": name,
+            "seen": 0,
+            "correct": 0,
+            "incorrect": 0,
+            "accuracy": 0.0,
+            "mastery": 0.0,
+        }
 
         self._subdomains[self._id_counter] = subdomain
         self._id_counter += 1
