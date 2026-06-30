@@ -7,10 +7,10 @@ def set_cache(key: str, value, ttl: int = 60):
 
 
 def get_cache(key: str):
-    data = redis_client.get(key)
-    if data is None:
-        return None
-    return json.loads(data)
+    value = redis_client.get(key)
+    if value:
+        return json.loads(value)
+    return None
 
 
 def delete_cache(key: str):
