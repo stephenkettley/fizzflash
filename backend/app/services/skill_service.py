@@ -2,13 +2,20 @@ from app.repositories.skill_repository import SkillRepository
 from app.utils.stats import compute_accuracy
 
 
+class SkillAlreadyExistsError(Exception):
+    pass
+
+
 class SkillService:
 
     def __init__(self, db):
         self.repo = SkillRepository(db)
 
     def create_skill(self, name: str):
-        return self.repo.create(name.lower())
+        normalized = name.lower()
+        if self.repo.get_by_name(normalized):
+            raise SkillAlreadyExistsError(f"Skill '{normalized}' already exists")
+        return self.repo.create(normalized)
 
     def get_skill(self, skill_id: int):
         return self.repo.get(skill_id)

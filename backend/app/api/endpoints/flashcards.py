@@ -77,3 +77,24 @@ def mark_answer(card_id: int, payload: FlashcardAnswer, db: Session = Depends(ge
     service = FlashcardService(db)
 
     return service.mark_answer(card_id=card_id, is_correct=payload.is_correct)
+
+
+@router.get("/skills/{skill_id}/flashcards")
+def get_flashcards_by_skill(skill_id: int, db: Session = Depends(get_db)):
+    CACHE_KEY = f"flashcards:skill:{skill_id}"
+
+    cached = get_cache(CACHE_KEY)
+    if cached:
+        return cached
+
+    service = FlashcardService(db)
+
+    subdomains = service.subdomain_service.repo.list_by_skill(skill_id)
+
+    flashcards = []
+    for subdomain in subdomains:
+        flashcards.extend(service.get_subdomain_cards(subdomain.id))
+
+    set_cache(CACHE_KEY, flashcards, ttl=300)
+
+    return flashcards

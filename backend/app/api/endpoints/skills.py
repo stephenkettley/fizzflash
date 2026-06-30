@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.deps import get_db
-from app.services.skill_service import SkillService
+from app.services.skill_service import SkillService, SkillAlreadyExistsError
 from app.schemas.skill import SkillCreate, SkillResponse
 from app.core.cache import get_cache, set_cache, delete_cache
 
@@ -17,7 +17,10 @@ def create_skill(payload: SkillCreate, db: Session = Depends(get_db)):
 
     service = SkillService(db)
 
-    return service.create_skill(payload.name)
+    try:
+        return service.create_skill(payload.name)
+    except SkillAlreadyExistsError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 from app.core.cache import set_cache
