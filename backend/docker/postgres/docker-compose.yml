@@ -1,0 +1,20 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: fizzflash-postgres
+    restart: always
+
+    environment:
+      POSTGRES_USER: fizzflash
+      POSTGRES_PASSWORD: fizzflash
+      POSTGRES_DB: fizzflash
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - fizzflash_pgdata:/var/lib/postgresql/data
+
+volumes:
+  fizzflash_pgdata:
