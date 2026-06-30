@@ -16,5 +16,6 @@ services:
     volumes:
       - fizzflash_pgdata:/var/lib/postgresql/data
 
+
 volumes:
   fizzflash_pgdata:

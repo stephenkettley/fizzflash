@@ -6,6 +6,7 @@ from app.api.endpoints import (
     subdomains,
     ai_flashcards,
     study,
+    test,
 )
 
 api_router = APIRouter()
